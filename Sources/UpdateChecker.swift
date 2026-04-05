@@ -42,7 +42,7 @@ final class UpdateChecker: ObservableObject {
         }
     }
 
-    private func isNewer(remote: String, current: String) -> Bool {
+    func isNewer(remote: String, current: String) -> Bool {
         let r = remote.split(separator: ".").compactMap { Int($0) }
         let c = current.split(separator: ".").compactMap { Int($0) }
         for i in 0..<max(r.count, c.count) {
