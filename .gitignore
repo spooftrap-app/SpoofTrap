@@ -11,3 +11,4 @@ dist/build/
 dist/SpoofTrap/
 
 .secrets/
+Sources/Resources/Secrets.plist

@@ -44,8 +44,8 @@ class LicenseManager: ObservableObject {
     @Published private(set) var validationError: String?
     @Published private(set) var isValidating: Bool = false
     
-    private let supabaseURL = "https://xucsfvyijnjkwdiiquwy.supabase.co"
-    private let supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1Y3Nmdnlpam5qa3dkaWlxdXd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NzY0NDksImV4cCI6MjA5MDU1MjQ0OX0.hfeGgWqqWdIym6Y4BqlW8nlIZ8y7MDmtWynS3bWQ0BM"
+    private var supabaseURL: String { Secrets.shared.supabaseURL }
+    private var supabaseAnonKey: String { Secrets.shared.supabaseAnonKey }
     
     private let storageURL: URL = {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
