@@ -36,7 +36,7 @@ def load_credentials():
                     os.environ[key] = value
     
     return {
-        'url': os.getenv('SUPABASE_URL', 'https://xucsfvyijnjkwdiiquwy.supabase.co'),
+        'url': os.getenv('SUPABASE_URL'),
         'service_key': os.getenv('SUPABASE_SERVICE_KEY'),
         'anon_key': os.getenv('SUPABASE_ANON_KEY')
     }
@@ -304,9 +304,9 @@ def main():
     
     args = parser.parse_args()
     
-    if not SUPABASE_SERVICE_KEY:
+    if not SUPABASE_URL or not SUPABASE_SERVICE_KEY:
         print("❌ Missing Supabase credentials.")
-        print("   Set SUPABASE_SERVICE_KEY or create .secrets/supabase.env")
+        print("   Set SUPABASE_URL and SUPABASE_SERVICE_KEY or create .secrets/supabase.env")
         sys.exit(1)
     
     if args.command == 'create':
