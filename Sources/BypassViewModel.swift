@@ -5,7 +5,7 @@ import Foundation
 import UserNotifications
 
 @MainActor
-final class BypassViewModel: ObservableObject {
+final class BypassViewModel: ObservableObject, GlobalHotkeyActionDelegate {
     enum BypassState {
         case stopped
         case starting
