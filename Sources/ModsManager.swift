@@ -423,13 +423,18 @@ final class ModsManager: ObservableObject {
     }
 
     private func loadSettings() {
-        guard let data = try? Data(contentsOf: settingsURL),
-              let saved = try? JSONDecoder().decode(SavedModsSettings.self, from: data) else {
-            return
-        }
+        let url = settingsURL
+        Task.detached {
+            guard let data = try? Data(contentsOf: url),
+                  let saved = try? JSONDecoder().decode(SavedModsSettings.self, from: data) else {
+                return
+            }
 
-        isEnabled = saved.isEnabled
-        installedMods = saved.mods
+            await MainActor.run { [weak self] in
+                self?.isEnabled = saved.isEnabled
+                self?.installedMods = saved.mods
+            }
+        }
     }
 
     private func saveSettings() {
