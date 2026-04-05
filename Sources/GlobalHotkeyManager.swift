@@ -2,6 +2,16 @@ import AppKit
 import Carbon.HIToolbox
 
 @MainActor
+protocol GlobalHotkeyActionDelegate: AnyObject {
+    var proManager: ProManager { get }
+    var perfOverlay: PerformanceOverlayManager { get }
+    var logWatcher: RobloxLogWatcher { get }
+    func toggleBypass()
+    func serverHop()
+    func exportLogs()
+}
+
+@MainActor
 final class GlobalHotkeyManager {
     enum Hotkey: Int, CaseIterable {
         case toggleSession = 1
@@ -11,7 +21,7 @@ final class GlobalHotkeyManager {
     }
 
     private var eventHandlerRef: EventHandlerRef?
-    private weak var viewModel: BypassViewModel?
+    weak var viewModel: GlobalHotkeyActionDelegate?
 
     private static var sharedInstance: GlobalHotkeyManager?
 
@@ -19,7 +29,7 @@ final class GlobalHotkeyManager {
         Self.sharedInstance = self
     }
 
-    func setup(viewModel: BypassViewModel) {
+    func setup(viewModel: GlobalHotkeyActionDelegate) {
         self.viewModel = viewModel
         unregisterAll()
         registerHotkeys()
@@ -92,7 +102,7 @@ final class GlobalHotkeyManager {
         }
     }
 
-    private func handleHotkey(id: Int) {
+    func handleHotkey(id: Int) {
         guard let vm = viewModel, let hotkey = Hotkey(rawValue: id) else { return }
 
         switch hotkey {
