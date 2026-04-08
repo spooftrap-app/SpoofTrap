@@ -1,0 +1,4 @@
+## 2025-04-08 - Command Injection in Process Execution via String Interpolation
+**Vulnerability:** Command injection vulnerability in `UpdateChecker.swift` where `Bundle.main.bundleURL.path` was directly interpolated into a `/bin/sh -c` command string (`"sleep 1 && open \"\(appPath)\""`).
+**Learning:** Even though app bundle paths are not typically viewed as user input, they can be modified by users (e.g., renaming the app to include shell metacharacters). String interpolation in shell commands exposes the application to arbitrary code execution if the path contains sequences like `"; rm -rf /"`.
+**Prevention:** Always pass variables (especially file paths) as separate arguments to the shell script using positional parameters (e.g., `$0`, `$1`) instead of string interpolation. For example, `arguments = ["-c", "sleep 1 && open \"$0\"", appPath]`.
