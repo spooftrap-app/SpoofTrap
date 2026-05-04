@@ -1,0 +1,4 @@
+## 2024-05-04 - SSRF and Command Injection in Log Parsers
+**Vulnerability:** IP addresses and process IDs extracted from log files via regular expressions were directly passed into URLs (`URL(string: ...)`) for API requests and to external binaries via `Process()` arguments (like `/bin/ps` and `/sbin/ping`).
+**Learning:** Untrusted input from local log files can be manipulated. If an attacker injects a malicious payload into a log file that happens to match the loose extraction logic, that payload could be evaluated as an unexpected argument or alter the structure of outbound HTTP requests.
+**Prevention:** Always strictly validate extracted log data against a tight, expected format (e.g., `^[a-fA-F0-9.:]+$` for IPs, `^[0-9]+$` for PIDs) before passing it into sensitive contexts like system commands or network requests.
