@@ -1,0 +1,4 @@
+## 2026-05-06 - XSS Vulnerability in HTML Escaping
+**Vulnerability:** The `escapeHtml` function in `docs/script.js` was incomplete, only escaping ampersands and angle brackets (`&`, `<`, `>`). It failed to escape single and double quotes (`'`, `"`).
+**Learning:** An incomplete HTML escaping function can lead to Cross-Site Scripting (XSS) vulnerabilities if the escaped output is used within HTML attributes (e.g., `<a href="?_=%2Fjules-ai%2F%3C%2Fspan%3E%24%7BescapeHtml%28userURL%23%2FkDRmVhZBRh6ynJU6uZXmcM%3D")}">`). Malicious users can inject quotes to break out of the attribute and execute arbitrary JavaScript.
+**Prevention:** Always use comprehensive HTML escaping that includes `&`, `<`, `>`, `"`, and `'`. Alternatively, use safer DOM manipulation methods like `textContent` or `document.createElement()` instead of directly injecting strings into HTML.
