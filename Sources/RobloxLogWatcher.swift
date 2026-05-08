@@ -168,6 +168,11 @@ final class RobloxLogWatcher: ObservableObject {
             return nil
         }
 
+        // 🛡️ Sentinel: Validate extracted PID format to prevent command argument injection
+        guard pid.range(of: "^[0-9]+$", options: .regularExpression) != nil else {
+            return nil
+        }
+
         let psProcess = Process()
         let psPipe = Pipe()
         psProcess.executableURL = URL(fileURLWithPath: "/bin/ps")
@@ -314,6 +319,9 @@ final class RobloxLogWatcher: ObservableObject {
     }
 
     private func resolveGameName(placeId: String) {
+        // 🛡️ Sentinel: Validate placeId format to prevent injection
+        guard placeId.range(of: "^[0-9]+$", options: .regularExpression) != nil else { return }
+
         Task.detached {
             guard let url = URL(string: "https://games.roblox.com/v1/games/multiget-place-details?placeIds=\(placeId)") else { return }
             guard let (data, _) = try? await URLSession.shared.data(from: url),
@@ -327,6 +335,9 @@ final class RobloxLogWatcher: ObservableObject {
     }
 
     private func resolveRegion(ip: String) {
+        // 🛡️ Sentinel: Strictly validate IP format to prevent SSRF
+        guard ip.range(of: "^[a-fA-F0-9.:]+$", options: .regularExpression) != nil else { return }
+
         Task.detached {
             guard let url = URL(string: "http://ip-api.com/json/\(ip)?fields=country,regionName,city,query,lat,lon") else { return }
             guard let (data, _) = try? await URLSession.shared.data(from: url),
@@ -345,6 +356,8 @@ final class RobloxLogWatcher: ObservableObject {
 
     private nonisolated static func measurePing(ip: String?) -> Int? {
         guard let ip, !ip.isEmpty else { return nil }
+        // 🛡️ Sentinel: Strictly validate IP format to prevent command argument injection
+        guard ip.range(of: "^[a-fA-F0-9.:]+$", options: .regularExpression) != nil else { return nil }
         let process = Process()
         let pipe = Pipe()
         process.executableURL = URL(fileURLWithPath: "/sbin/ping")
