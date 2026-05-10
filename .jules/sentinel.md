@@ -1,0 +1,4 @@
+## 2024-05-31 - Untrusted Log Data Causing Injection/SSRF Risks
+**Vulnerability:** Extracted variables (like IPs, PIDs, and Place IDs) from local Roblox application logs were passed directly into `Process()` arguments and `URL` endpoints without any validation. This created Server-Side Request Forgery (SSRF) and command/argument injection vulnerabilities if an attacker (e.g. malicious game server or user interaction) managed to inject specially crafted strings into the logs.
+**Learning:** Even data originating from local application log files must be treated as untrusted user input, as external entities often influence log content.
+**Prevention:** Strictly validate extracted log data against strict expected formats (e.g., regex `^[a-fA-F0-9.:]+$` for IPs, `^[0-9]+$` for numerical IDs) prior to using it in any sensitive operations.
