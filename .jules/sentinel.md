@@ -1,0 +1,4 @@
+## 2024-05-24 - Command Injection in Process Execution
+**Vulnerability:** Command injection due to unsanitized string interpolation of application paths when executing shell commands via `Process()`. Specifically, `task.arguments = ["-c", "sleep 1 && open \"\(appPath)\""]`.
+**Learning:** Even internal paths derived from application bundles (like `Bundle.main.bundleURL.path`) can potentially be manipulated or contain characters like quotes or semicolons that shell evaluates, leading to unauthorized command execution.
+**Prevention:** Avoid string interpolation when building shell commands in Swift's `Process()`. Instead, use parameterized approaches or positional arguments. For shell scripts via `-c`, pass the dynamic parts as positional arguments (e.g., `["-c", "sleep 1 && /usr/bin/open \"$0\"", appPath]`).
