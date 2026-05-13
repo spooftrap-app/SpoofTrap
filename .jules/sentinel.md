@@ -1,0 +1,4 @@
+## 2024-06-25 - Fix command and argument injection / SSRF from untrusted log file inputs
+**Vulnerability:** The `RobloxLogWatcher.swift` script extracted variables (like PIDs and IP addresses) from untrusted application log files (`RobloxPlayer`) and passed them directly without validation as arguments to system commands (e.g., `ps`, `ping` via `Process()`) and interpolated them into external URLs. This allowed for potential argument/command injection or Server-Side Request Forgery (SSRF) if a malicious actor manipulated the log files.
+**Learning:** Even local application log files must be treated as untrusted input. Values extracted from them can be manipulated or poisoned.
+**Prevention:** Always use strict regex validation (e.g., `^[0-9]+$` for PIDs, `^[a-fA-F0-9.:]+$` for IP addresses) to sanitize untrusted input before using it in subprocess arguments or interpolating it into URLs.
