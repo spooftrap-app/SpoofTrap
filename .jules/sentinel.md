@@ -1,0 +1,4 @@
+## 2024-05-18 - Fix Command Injection in Shell Relaunch Scripts
+**Vulnerability:** Shell command injection vulnerability in `UpdateChecker.swift` where `Bundle.main.bundleURL.path` was directly interpolated into a `/bin/sh` shell command string (`"sleep 1 && open \"\\(appPath)\""`).
+**Learning:** Even though `Bundle.main.bundleURL.path` typically returns a benign path, a user or attacker could place the application in a maliciously named directory. This would execute arbitrary commands when the update mechanism attempts to relaunch the application.
+**Prevention:** When using `Process()` and passing scripts to `/bin/sh -c`, never interpolate variables into the script string. Always pass them as subsequent arguments and reference them within the script using `$0`, `$1`, etc. (e.g., `["-c", "sleep 1 && /usr/bin/open \"$0\"", appPath]`).
