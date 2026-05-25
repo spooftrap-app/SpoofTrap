@@ -1,0 +1,4 @@
+## 2024-05-18 - Command Injection in App Relaunch Logic
+**Vulnerability:** Command injection vulnerability in `UpdateChecker.swift` where `appPath` (which could potentially contain spaces or malicious shell characters if the app was renamed or moved to a crafted directory) was interpolated directly into a `/bin/sh` shell command string: `open \"\(appPath)\"`.
+**Learning:** Even internal app paths must be treated as untrusted input when executing shell commands, as they can be manipulated by an attacker who controls the file system location of the application. Using string interpolation for shell commands is a common anti-pattern.
+**Prevention:** Always pass user-controlled or path variables as separate arguments to `Process()` (e.g., using `$0` or `$1` in the script string and passing the variable in the `arguments` array) rather than interpolating them directly into the shell command string.
