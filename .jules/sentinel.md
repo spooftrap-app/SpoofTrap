@@ -1,0 +1,4 @@
+## 2024-05-31 - [Command Injection via String Interpolation]
+**Vulnerability:** String interpolation of application paths into shell commands (e.g., `task.arguments = ["-c", "sleep 1 && open \"\(appPath)\""]`) in Swift allows for command injection if the application path contains shell metacharacters.
+**Learning:** Even internal or semi-trusted paths (like the app's bundle URL path) can be manipulated by users renaming the application or containing directory. Interpolating these strings directly into shell commands (`/bin/sh -c`) creates a command injection vulnerability.
+**Prevention:** Always pass variables to shell commands as arguments (e.g., using `$0` or `$1`) and bind them in the arguments array (e.g., `task.arguments = ["-c", "sleep 1 && /usr/bin/open \"$0\"", appPath]`), which properly escapes and handles the data without interpolation into the shell string.
