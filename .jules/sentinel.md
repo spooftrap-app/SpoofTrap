@@ -1,0 +1,4 @@
+## 2024-05-18 - Shell Execution via Process() with String Interpolation Leads to Command Injection
+**Vulnerability:** Command injection when using `Process()` to execute `sh -c` where the shell string is created by interpolating strings (like `Bundle.main.bundleURL.path`). Even variables that seem safe or implicitly trusted, such as file paths dynamically obtained from macOS APIs, can be manipulated (e.g., an attacker renaming an `.app` bundle to contain shell metacharacters like `SpoofTrap"; echo "pwned".app`).
+**Learning:** `Bundle.main.bundleURL.path` is not immune to shell metacharacter manipulation, and passing it via interpolation creates an immediate path to arbitrary code execution upon an update/relaunch.
+**Prevention:** Never use string interpolation to construct arguments for `sh -c`. Always pass variable data as separate, external arguments to `Process` (e.g., passing `appPath` in the arguments array and using `$0` in the `sh -c` command string).
