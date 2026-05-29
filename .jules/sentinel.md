@@ -1,0 +1,4 @@
+## 2024-05-24 - SSRF & Command Injection via Local Log Files
+**Vulnerability:** External IP addresses, Process IDs (PIDs), and Game Place IDs extracted from local application log files were being directly inserted into external URLs (`http://ip-api.com`) and process arguments (`/sbin/ping`, `/bin/ps`) without validation.
+**Learning:** Local log files are often assumed to be trustworthy, but they can be manipulated by an attacker (e.g., via fake log entries or game names) to inject arbitrary strings into downstream operations, bypassing basic shell string separation if option flags like `-` are parsed incorrectly.
+**Prevention:** Always validate all data extracted from log parsing before use in network requests or system commands. Implement strict regex whitelisting, such as `^[0-9]+$` for PIDs and `^[a-fA-F0-9.:]+$` for IPs, to ensure data conforms precisely to expected structures.
