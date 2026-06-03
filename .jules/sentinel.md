@@ -1,0 +1,4 @@
+## 2024-05-18 - [Preventing Command Injection in App Relaunch]
+**Vulnerability:** Constructing shell execution processes (e.g. `/bin/sh -c`) using string interpolation for user-controlled paths (`task.arguments = ["-c", "sleep 1 && open \"\(appPath)\""]`) allowed potential arbitrary command injection.
+**Learning:** If an application path contains crafted strings (such as `"` and `; rm -rf /`), simple interpolation opens it up to evaluation by the shell, leading to RCE in contexts where app paths aren't tightly controlled.
+**Prevention:** Always use safe parameter passing mechanisms provided by the shell (like `$0` or `$1`) inside strings and pass actual unescaped values as the positional arguments to `Process.arguments` (e.g. `["-c", "sleep 1 && /usr/bin/open \"$0\"", appPath]`). Also, using absolute paths for system binaries (`/usr/bin/open`) prevents `$PATH` hijacking.
