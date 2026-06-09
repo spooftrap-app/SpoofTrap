@@ -1,0 +1,4 @@
+## 2024-03-21 - [CRITICAL] Unvalidated log data leading to Command Injection and SSRF
+**Vulnerability:** Untrusted input from local log files (PIDs, PlaceIDs, IPs) was directly passed into shell command arguments (`Process()`) and network requests (`URL(string:)`) without proper validation. This allowed potential argument/command injection and Server-Side Request Forgery (SSRF) if a malicious actor manipulated the logs.
+**Learning:** Data extracted from local application log files must be treated as untrusted input. Values such as IPs, game titles, usernames, and PIDs can be manipulated and should never be interpolated directly into shell commands or URLs without validation.
+**Prevention:** Always validate extracted log values against an expected format using strict regex (e.g., `^[a-fA-F0-9.:]+$` for IPs, `^[0-9]+$` for PIDs and PlaceIDs) before using them in sensitive operations.
