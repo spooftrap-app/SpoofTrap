@@ -155,7 +155,9 @@ final class UpdateChecker: ObservableObject {
         let appPath = Bundle.main.bundleURL.path
         let task = Process()
         task.executableURL = URL(fileURLWithPath: "/bin/sh")
-        task.arguments = ["-c", "sleep 1 && open \"\(appPath)\""]
+        // 🛡️ Sentinel: Prevent command injection by passing appPath as a separate argument ($0)
+        // rather than interpolating it directly into the shell string.
+        task.arguments = ["-c", "sleep 1 && /usr/bin/open \"$0\"", appPath]
         try? task.run()
         NSApplication.shared.terminate(nil)
     }
