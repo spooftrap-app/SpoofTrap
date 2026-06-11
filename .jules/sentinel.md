@@ -1,0 +1,4 @@
+## $(date "+%Y-%m-%d") - Fix Command Injection in UpdateChecker Relaunch
+**Vulnerability:** Command injection vulnerability via `Bundle.main.bundleURL.path` string interpolation when calling `/bin/sh` to relaunch the application.
+**Learning:** `Bundle.main.bundleURL.path` is untrusted, user-controllable input in macOS apps, as users can manipulate the application directory name (e.g., naming it `SpoofTrap"; touch /tmp/pwned; #.app`). Passing this directly into an interpolated shell string (`"sleep 1 && open \"\(appPath)\""`) allows execution of arbitrary shell commands.
+**Prevention:** When using Swift's `Process()` for shell execution, always pass user-controlled or path variables as separate arguments (e.g., using `$0` or `$1` in the script string and passing the variable in the arguments array) to prevent command injection vulnerabilities. For example: `task.arguments = ["-c", "sleep 1 && /usr/bin/open \"$0\"", appPath]`.
