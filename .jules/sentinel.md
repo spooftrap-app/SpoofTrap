@@ -1,0 +1,4 @@
+## 2024-05-24 - [Command Injection via App Path Interpolation]
+**Vulnerability:** The application was directly interpolating `Bundle.main.bundleURL.path` into a `/bin/sh -c` shell command execution. Since the application name/path is user-controllable (e.g., a user can rename the app to `SpoofTrap"; rm -rf /; ".app`), this created a critical command injection vulnerability during the auto-update relaunch process.
+**Learning:** `Bundle.main.bundleURL.path` and similar local path properties must be treated as untrusted, user-controlled input. Passing them directly into shell commands via string interpolation is unsafe.
+**Prevention:** Always use separate arguments for dynamic inputs when executing shell commands. Instead of `["-c", "sleep 1 && open \"\(appPath)\""]`, use parameterization like `["-c", "sleep 1 && open \"$0\"", appPath]`.
