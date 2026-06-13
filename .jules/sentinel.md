@@ -1,0 +1,4 @@
+## 2024-05-24 - Command Injection via Bundle.main.bundleURL.path
+**Vulnerability:** `Bundle.main.bundleURL.path` was directly interpolated into a shell command using `Process()` to relaunch the app. This allows for command injection if a user or attacker renames the application directory to contain shell metacharacters (e.g., `SpoofTrap"; malicious_cmd; ".app`).
+**Learning:** `Bundle.main.bundleURL.path` is user-controllable input in macOS, as users can rename application bundles. Direct interpolation into `sh -c` strings is unsafe.
+**Prevention:** Always pass user-controllable strings, including application paths, as separate arguments in the `process.arguments` array (e.g., `["-c", "sleep 1 && /usr/bin/open \"$0\"", appPath]`) when executing shell scripts, rather than using string interpolation.
