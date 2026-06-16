@@ -1,0 +1,4 @@
+## 2024-06-16 - Prevent Command Injection via Process Interpolation
+**Vulnerability:** Shell scripts executed using Swift's `Process` class by passing arguments like `["-c", "sleep 1 && open \"\(appPath)\""]` were vulnerable to command injection if `appPath` contained shell metacharacters (e.g. rename the app folder with `"; touch /tmp/pwned; "`).
+**Learning:** `Bundle.main.bundleURL.path` or dynamically created paths must be treated as user-controllable input in macOS apps, and directly interpolating them into a `/bin/sh` string allows a malicious user to manipulate the executing directory to inject shell commands.
+**Prevention:** Always use shell positional arguments (`$1`, `$2`) to pass dynamic values safely. The correct implementation is `task.arguments = ["-c", "sleep 1 && /usr/bin/open \"$1\"", "--", appPath]`.
