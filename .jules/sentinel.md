@@ -1,0 +1,4 @@
+## 2024-05-23 - Command Injection in Application Relaunch
+**Vulnerability:** The `UpdateChecker.relaunchApp()` method was using direct string interpolation to embed the application path (`Bundle.main.bundleURL.path`) into a shell script executed by `/bin/sh`. This path is implicitly user-controlled since users can rename the application bundle. An attacker could rename the `.app` bundle to include shell metacharacters and execute arbitrary commands.
+**Learning:** Even internal properties like bundle paths must be treated as user-controlled input in desktop applications because the user can manipulate the directory structure. String interpolation in shell commands is fundamentally unsafe and leads to command injection.
+**Prevention:** Pass variables to shell scripts as positional arguments (`$1`, `$2`) using the `--` delimiter to prevent flag injection, rather than interpolating them directly into the script string.
