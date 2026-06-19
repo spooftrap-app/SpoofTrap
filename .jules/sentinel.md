@@ -1,0 +1,4 @@
+## 2025-02-28 - [Bundle URL Command Injection]
+**Vulnerability:** Command injection when interpolating `Bundle.main.bundleURL.path` inside `Process()` arguments.
+**Learning:** `Bundle.main.bundleURL.path` is untrusted, user-controllable input in macOS apps, as users can manipulate the application directory name (e.g. adding `"` and `;` and shell commands to it).
+**Prevention:** Never use direct string interpolation for path arguments when calling `/bin/sh -c` via `Process()`. Always pass user-controlled or path variables securely as separate arguments (e.g., using `"$1"` as delimiter and the parameter in `arguments`).
