@@ -1,0 +1,4 @@
+## 2024-06-12 - Command Injection in `Process` via Path Interpolation
+**Vulnerability:** Command injection vulnerability identified in `UpdateChecker.swift` where `Bundle.main.bundleURL.path` was directly interpolated into a `/bin/sh -c` string for `Process.arguments`.
+**Learning:** `Bundle.main.bundleURL.path` is untrusted user input since users can rename the application directory. Interpolating this directly into shell scripts allows execution of arbitrary shell commands.
+**Prevention:** When executing shell scripts via `Process` (e.g. `"/bin/sh", "-c"`), any untrusted variables like file paths must be passed as positional arguments to the shell (using `--` as delimiter, then passing `$1`) rather than string interpolation. Additionally, consider avoiding external shells altogether when possible by using native macOS APIs.
