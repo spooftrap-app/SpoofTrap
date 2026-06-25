@@ -1,0 +1,4 @@
+## 2024-06-25 - Command Injection via Bundle Path
+**Vulnerability:** The application used string interpolation with `Bundle.main.bundleURL.path` in a shell command (`/bin/sh -c "sleep 1 && open \"\(appPath)\""`). This creates a command injection vulnerability because users can rename the application bundle to include malicious payload (e.g. `"SpoofTrap.app"; rm -rf /; .app`).
+**Learning:** Even internal properties like bundle path must be treated as untrusted user input in macOS apps, as users have full control over the application's directory name on their local machine.
+**Prevention:** Use Swift's `Process` correctly by passing user-controlled variables or paths as separate positional arguments rather than using string interpolation in the shell script. Specifically, pass the script to `/bin/sh -c` and use `$1` within the script, mapping the user input as a subsequent argument.
