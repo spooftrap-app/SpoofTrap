@@ -167,6 +167,7 @@ final class RobloxLogWatcher: ObservableObject {
               !pid.isEmpty else {
             return nil
         }
+        guard pid.range(of: "^[0-9]+$", options: .regularExpression) != nil else { return nil }
 
         let psProcess = Process()
         let psPipe = Pipe()
@@ -314,6 +315,8 @@ final class RobloxLogWatcher: ObservableObject {
     }
 
     private func resolveGameName(placeId: String) {
+        // 🛡️ Sentinel: Prevent SSRF via log injection
+        guard placeId.range(of: "^[0-9]+$", options: .regularExpression) != nil else { return }
         Task.detached {
             guard let url = URL(string: "https://games.roblox.com/v1/games/multiget-place-details?placeIds=\(placeId)") else { return }
             guard let (data, _) = try? await URLSession.shared.data(from: url),
@@ -327,6 +330,8 @@ final class RobloxLogWatcher: ObservableObject {
     }
 
     private func resolveRegion(ip: String) {
+        // 🛡️ Sentinel: Prevent SSRF via log injection
+        guard ip.range(of: "^[a-fA-F0-9.:]+$", options: .regularExpression) != nil else { return }
         Task.detached {
             guard let url = URL(string: "http://ip-api.com/json/\(ip)?fields=country,regionName,city,query,lat,lon") else { return }
             guard let (data, _) = try? await URLSession.shared.data(from: url),
@@ -345,6 +350,8 @@ final class RobloxLogWatcher: ObservableObject {
 
     private nonisolated static func measurePing(ip: String?) -> Int? {
         guard let ip, !ip.isEmpty else { return nil }
+        // 🛡️ Sentinel: Prevent command injection via Process().arguments
+        guard ip.range(of: "^[a-fA-F0-9.:]+$", options: .regularExpression) != nil else { return nil }
         let process = Process()
         let pipe = Pipe()
         process.executableURL = URL(fileURLWithPath: "/sbin/ping")
