@@ -1,0 +1,4 @@
+## 2024-07-03 - Prevent SSRF and Command Injection in Log Parsing
+**Vulnerability:** In `RobloxLogWatcher.swift`, data extracted from application logs (like IP addresses, PIDs, and PlaceIDs) was being used directly in sensitive operations (e.g., shell command arguments and network requests) without strict validation. This allowed potential SSRF and command/argument injection attacks if malicious data was spoofed into the logs.
+**Learning:** Extracted data from untrusted sources (even local application logs) can be manipulated. Passing such data blindly to URLs or as arguments to `Process()` can expose the application to argument injection and request forgery vulnerabilities.
+**Prevention:** Always validate extracted data against a strict format using regex (e.g., `^[0-9]+$` for IDs/PIDs and `^[a-fA-F0-9.:]+$` for IPs) before utilizing them in secure operations or network calls.

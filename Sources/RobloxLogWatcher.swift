@@ -164,7 +164,9 @@ final class RobloxLogWatcher: ObservableObject {
         let pidData = pipe.fileHandleForReading.readDataToEndOfFile()
         guard let pidStr = String(data: pidData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines),
               let pid = pidStr.components(separatedBy: .newlines).first,
-              !pid.isEmpty else {
+              !pid.isEmpty,
+              // 🛡️ Sentinel: Validate PID format to prevent argument injection
+              pid.range(of: "^[0-9]+$", options: .regularExpression) != nil else {
             return nil
         }
 
@@ -314,6 +316,9 @@ final class RobloxLogWatcher: ObservableObject {
     }
 
     private func resolveGameName(placeId: String) {
+        // 🛡️ Sentinel: Validate placeId to prevent SSRF
+        guard placeId.range(of: "^[0-9]+$", options: .regularExpression) != nil else { return }
+
         Task.detached {
             guard let url = URL(string: "https://games.roblox.com/v1/games/multiget-place-details?placeIds=\(placeId)") else { return }
             guard let (data, _) = try? await URLSession.shared.data(from: url),
@@ -327,6 +332,9 @@ final class RobloxLogWatcher: ObservableObject {
     }
 
     private func resolveRegion(ip: String) {
+        // 🛡️ Sentinel: Validate IP to prevent SSRF
+        guard ip.range(of: "^[a-fA-F0-9.:]+$", options: .regularExpression) != nil else { return }
+
         Task.detached {
             guard let url = URL(string: "http://ip-api.com/json/\(ip)?fields=country,regionName,city,query,lat,lon") else { return }
             guard let (data, _) = try? await URLSession.shared.data(from: url),
@@ -345,6 +353,8 @@ final class RobloxLogWatcher: ObservableObject {
 
     private nonisolated static func measurePing(ip: String?) -> Int? {
         guard let ip, !ip.isEmpty else { return nil }
+        // 🛡️ Sentinel: Validate IP to prevent command/argument injection
+        guard ip.range(of: "^[a-fA-F0-9.:]+$", options: .regularExpression) != nil else { return nil }
         let process = Process()
         let pipe = Pipe()
         process.executableURL = URL(fileURLWithPath: "/sbin/ping")
